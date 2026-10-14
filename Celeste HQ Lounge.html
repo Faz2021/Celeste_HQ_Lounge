@@ -1,0 +1,679 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Celeste HQ Lounge</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one app, three rooms. Guest = narrow phone menu with a bottom bag bar.
+   Staff = kanban board of live orders. Admin = sidebar of menu, rooms & staff, today. */
+:root{
+  --bg:#F5F6F9; --surface:#FFFFFF; --sunk:#EEF0F5;
+  --ink:#151B30; --muted:#5D6579; --line:#E1E4EC;
+  --brand:#1E2852; --brand-ink:#FFFFFF;
+  --accent:#A87B32; --accent-soft:#F4ECDD;
+  --new:#3152C2; --new-soft:#E7ECFB;
+  --prep:#A8680F; --prep-soft:#FBF0DE;
+  --go:#6A3FB5; --go-soft:#EFE8FA;
+  --done:#2C7A57; --done-soft:#E2F2EA;
+  --danger:#B23A3A;
+  --shadow:0 1px 2px rgba(21,27,48,.06),0 8px 24px rgba(21,27,48,.06);
+  --f-display:"Cormorant Garamond","Iowan Old Style",Georgia,serif;
+  --f-body:"Manrope",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1120; --surface:#151A2D; --sunk:#10152A;
+  --ink:#EDEFF6; --muted:#9AA1B6; --line:#262C45;
+  --brand:#E3CC97; --brand-ink:#12162A;
+  --accent:#E3CC97; --accent-soft:#2A2618;
+  --new:#8EA6FF; --new-soft:#1C2648; --prep:#F0B65C; --prep-soft:#2E2414;
+  --go:#C3A4FF; --go-soft:#261C3F; --done:#6FD3A4; --done-soft:#14291F;
+  --danger:#FF8A8A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1120; --surface:#151A2D; --sunk:#10152A;
+  --ink:#EDEFF6; --muted:#9AA1B6; --line:#262C45;
+  --brand:#E3CC97; --brand-ink:#12162A;
+  --accent:#E3CC97; --accent-soft:#2A2618;
+  --new:#8EA6FF; --new-soft:#1C2648; --prep:#F0B65C; --prep-soft:#2E2414;
+  --go:#C3A4FF; --go-soft:#261C3F; --done:#6FD3A4; --done-soft:#14291F;
+  --danger:#FF8A8A; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 96px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.serif{font-family:var(--f-display)}
+.muted{color:var(--muted)}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* Top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);margin:0 calc(-1*max(16px,env(safe-area-inset-right,0px))) 0 calc(-1*max(16px,env(safe-area-inset-left,0px)))}
+.top .in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mark{display:flex;align-items:baseline;gap:8px;text-decoration:none;color:var(--ink)}
+.mark b{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:28px;letter-spacing:.01em;line-height:1}
+.mark span{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.views{margin-left:auto;display:flex;background:var(--sunk);border:1px solid var(--line);border-radius:999px;padding:3px}
+.views button{border:0;background:none;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted)}
+.views button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.banner{max-width:1180px;margin:12px auto 0;font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:8px 12px;color:var(--muted);background:var(--surface)}
+
+/* Buttons */
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn.small{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.field{display:grid;gap:6px}
+.field label{font-size:13px;font-weight:600}
+.input{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px}
+textarea.input{resize:vertical;min-height:70px}
+
+/* ---------- Guest ---------- */
+.guest{max-width:620px;margin:0 auto;padding-top:28px}
+.hello{padding:28px 24px;border-radius:20px;background:var(--brand);color:var(--brand-ink);position:relative;overflow:hidden}
+.hello::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--brand-ink) 25%,transparent);box-shadow:0 0 0 30px color-mix(in srgb,var(--brand-ink) 5%,transparent)}
+.hello .label{color:color-mix(in srgb,var(--brand-ink) 70%,transparent)}
+.hello h1{font-family:var(--f-display);font-weight:500;font-size:clamp(32px,8vw,44px);line-height:1.05;margin:8px 0 10px}
+.hello h1 i{font-weight:600}
+.hello p{margin:0;max-width:40ch;color:color-mix(in srgb,var(--brand-ink) 82%,transparent)}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:20px 0 6px;scrollbar-width:none;position:sticky;top:calc(env(safe-area-inset-top,0px) + 58px);background:var(--bg);z-index:5}
+.cats::-webkit-scrollbar{display:none}
+.cats button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:600;font-size:13px;color:var(--muted)}
+.cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.section h2{font-family:var(--f-display);font-weight:600;font-size:26px;margin:22px 0 4px}
+.menu-list{display:grid;gap:0}
+.item{display:grid;grid-template-columns:1fr auto;gap:8px 16px;padding:16px 0;border-bottom:1px solid var(--line);align-items:start}
+.item h3{font-size:16px;font-weight:700}
+.item p{margin:2px 0 0;font-size:14px;color:var(--muted);max-width:44ch}
+.item .free{font-family:var(--f-display);font-style:italic;color:var(--accent);font-size:16px}
+.chips{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.stepper{display:flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.stepper button{border:0;background:none;width:34px;height:34px;border-radius:50%;font-size:18px;line-height:1}
+.stepper span{min-width:20px;text-align:center;font-weight:700}
+.add{border:1px solid var(--ink);background:none;border-radius:999px;padding:6px 16px;font-weight:700;font-size:13px}
+.item.off{opacity:.5}
+.item.off .add{display:none}
+
+.bagbar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  pointer-events:none}
+.bagbar button{pointer-events:auto;max-width:620px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;
+  border:0;border-radius:16px;padding:16px 20px;background:var(--brand);color:var(--brand-ink);font-weight:700;box-shadow:0 12px 30px rgba(10,14,30,.25)}
+.sheet-bg{position:fixed;inset:0;background:rgba(8,10,20,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:620px;border-radius:22px 22px 0 0;max-height:92%;overflow:auto;
+  padding:22px max(20px,env(safe-area-inset-right,0px)) calc(22px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));display:grid;gap:16px}
+.sheet h2{font-family:var(--f-display);font-size:28px;font-weight:600}
+.line{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.line small{display:block;color:var(--muted)}
+.track{text-align:center;padding:36px 8px 8px;display:grid;gap:14px;justify-items:center}
+.track .no{font-family:var(--f-display);font-size:64px;line-height:1;font-weight:600}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;max-width:440px;margin-top:8px}
+.steps div{display:grid;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+.steps div::before{content:"";height:4px;border-radius:4px;background:var(--line)}
+.steps div.on{color:var(--ink)}
+.steps div.on::before{background:var(--accent)}
+
+/* ---------- Staff ---------- */
+.staff-head{display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between;padding:28px 0 18px}
+.staff-head h1{font-family:var(--f-display);font-size:36px;font-weight:600}
+.tally{display:flex;gap:22px;flex-wrap:wrap}
+.tally div{display:grid}
+.tally b{font-size:22px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+@media (max-width:860px){.board{grid-template-columns:1fr}}
+.col{background:var(--sunk);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;gap:10px;min-width:0}
+.col header{display:flex;justify-content:space-between;align-items:center;padding:2px 4px}
+.col header h2{font-size:14px;font-weight:700;display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%}
+.empty{font-size:13px;color:var(--muted);padding:18px 8px;text-align:center}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;box-shadow:var(--shadow);border-left:4px solid var(--c)}
+.ticket .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ticket .no{font-family:var(--f-display);font-size:24px;font-weight:600;line-height:1}
+.ticket .where{font-weight:700}
+.ticket ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:14px}
+.ticket li b{display:inline-block;min-width:26px}
+.ticket li small{color:var(--muted)}
+.note{font-size:13px;background:var(--accent-soft);border-radius:8px;padding:6px 10px}
+.age{font-size:12px;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--sunk)}
+.age.late{background:var(--danger);color:#fff}
+.who{font-size:12px;color:var(--muted)}
+.ticket .acts{display:flex;gap:8px;flex-wrap:wrap}
+.ticket .acts .btn{flex:1}
+.fresh{animation:pop 1.2s ease}
+@keyframes pop{0%{transform:scale(.97);box-shadow:0 0 0 4px var(--new-soft)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.fresh{animation:none}}
+
+/* ---------- Admin ---------- */
+.admin{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding-top:28px}
+@media (max-width:760px){.admin{grid-template-columns:1fr}}
+.side{display:grid;gap:4px;align-content:start}
+@media (max-width:760px){.side{display:flex;overflow-x:auto}}
+.side button{text-align:left;border:0;background:none;padding:9px 12px;border-radius:9px;font-weight:600;color:var(--muted);white-space:nowrap}
+.side button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.panel{display:grid;gap:18px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap}
+.panel-head h1{font-family:var(--f-display);font-size:34px;font-weight:600}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:12px 14px;border-bottom:1px solid var(--line)}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.cat-pill{font-size:12px;font-weight:600;background:var(--sunk);border-radius:999px;padding:2px 9px}
+.switch{position:relative;width:40px;height:22px;border-radius:999px;border:0;background:var(--line);padding:0}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--surface);transition:left .15s}
+.switch[aria-checked="true"]{background:var(--done)}
+.switch[aria-checked="true"]::after{left:21px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:grid;gap:12px;align-content:start}
+.card h2{font-size:16px;font-weight:700}
+.taglist{display:flex;flex-wrap:wrap;gap:6px}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--sunk);border:1px solid var(--line);border-radius:999px;padding:4px 6px 4px 12px;font-size:13px;font-weight:600}
+.tag button{border:0;background:none;width:20px;height:20px;border-radius:50%;color:var(--muted)}
+.addrow{display:flex;gap:8px}
+.addrow .input{flex:1;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.stat b{display:block;font-family:var(--f-display);font-size:38px;font-weight:600;line-height:1.1}
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:minmax(0,160px) 1fr 32px;gap:10px;align-items:center;font-size:14px}
+.bar span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar i{display:block;height:10px;border-radius:6px;background:var(--accent)}
+.bar .track2{background:var(--sunk);border-radius:6px}
+.status{font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--s2);color:var(--s1)}
+.modal{max-width:520px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);
+  padding:10px 18px;border-radius:10px;font-weight:600;font-size:14px;z-index:60;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.grid2{grid-template-columns:1fr}}
+</style>
+
+<header class="top"><div class="in">
+  <a class="mark" href="#guest"><b>celeste</b><span>HQ Lounge</span></a>
+  <nav class="views" aria-label="Portal">
+    <button id="v-guest" data-view="guest">Guest menu</button>
+    <button id="v-staff" data-view="staff">Staff</button>
+    <button id="v-admin" data-view="admin">Admin</button>
+  </nav>
+</div></header>
+<div id="banner" class="banner" hidden></div>
+<main id="app"></main>
+<div id="bagbar" class="bagbar" hidden></div>
+<div id="overlay"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+/* ------------------------------------------------------------------ */
+/*  Data layer: shared db when available, otherwise an on-screen demo  */
+/* ------------------------------------------------------------------ */
+const STATUS = [
+  {k:"new",   label:"New",        c:"--new",  s:"--new-soft"},
+  {k:"prep",  label:"Preparing",  c:"--prep", s:"--prep-soft"},
+  {k:"onway", label:"On its way", c:"--go",   s:"--go-soft"},
+  {k:"done",  label:"Delivered",  c:"--done", s:"--done-soft"},
+];
+const CATS_DEFAULT = ["Tea","Coffee","Cold drinks","Water","Snacks"];
+const DEMO_SETTINGS = {welcome:"Make yourself at home. Everything here is on the house.",
+  rooms:["Reception lounge","Boardroom","Meeting room 1","Meeting room 2","Founders' office"],
+  staff:["Vihara","Housekeeping"], categories:CATS_DEFAULT};
+const DEMO_ITEMS = [
+  ["Ceylon black tea","Tea","Brewed fresh from high-grown leaf.",["No sugar","Less sugar","Regular"]],
+  ["Milk tea","Tea","Kiri thé, strong and creamy.",["No sugar","Less sugar","Regular"]],
+  ["Ginger tea","Tea","Black tea with fresh ginger.",["No sugar","Less sugar","Regular"]],
+  ["Green tea","Tea","Light and clean, served plain.",[]],
+  ["Black coffee","Coffee","Freshly made, served hot.",["No sugar","Less sugar","Regular"]],
+  ["Milk coffee","Coffee","Smooth, with steamed milk.",["No sugar","Less sugar","Regular"]],
+  ["Iced coffee","Coffee","Chilled coffee with milk over ice.",[]],
+  ["Fresh lime juice","Cold drinks","Squeezed to order.",["No sugar","Less sugar","Regular"]],
+  ["King coconut","Cold drinks","Thambili, served chilled.",[]],
+  ["Still water","Water","Chilled bottle.",["Chilled","Room temperature"]],
+  ["Sparkling water","Water","Chilled bottle.",[]],
+  ["Butter biscuits","Snacks","A small plate to share.",[]],
+  ["Chocolate cookies","Snacks","A small plate to share.",[]],
+  ["Fresh fruit plate","Snacks","Seasonal cut fruit.",[]],
+].map((r,i)=>({id:"i"+(i+1),name:r[0],category:r[1],desc:r[2],choices:r[3],available:true,sort:i+1}));
+
+const Store = (() => {
+  let db=null, mode="loading", canWrite=true, canAdmin=true;
+  const subs = {items:new Set(), settings:new Set(), orders:new Set()};
+  const state = {items:[], settings:null, orders:[]};
+  const emit = k => subs[k].forEach(fn=>fn(state[k]));
+
+  function demoBoot(){
+    mode="demo";
+    state.items = DEMO_ITEMS.map(x=>({...x}));
+    state.settings = {...DEMO_SETTINGS};
+    const now=Date.now();
+    state.orders = [
+      {id:"d1",no:214,guest:"Ruwan (Keells)",room:"Boardroom",note:"Meeting starts 2pm",items:[{name:"Milk tea",qty:3,choice:"Less sugar"},{name:"Butter biscuits",qty:1}],status:"new",staff:"",createdAt:now-2*60e3},
+      {id:"d2",no:213,guest:"Amara",room:"Reception lounge",note:"",items:[{name:"Black coffee",qty:1,choice:"No sugar"}],status:"prep",staff:"Vihara",createdAt:now-6*60e3},
+      {id:"d3",no:212,guest:"Visitors from Mastercard",room:"Meeting room 1",note:"",items:[{name:"Still water",qty:4,choice:"Chilled"}],status:"done",staff:"Housekeeping",createdAt:now-40*60e3,deliveredAt:now-33*60e3},
+    ];
+    ["items","settings","orders"].forEach(emit);
+  }
+
+  async function boot(){
+    let user=null;
+    try{ db = await window.claude?.use?.("db"); }catch(e){ db=null; }
+    try{ user = await window.claude?.use?.("user"); }catch(e){ user=null; }
+    if(!db){ demoBoot(); onMode(); return; }
+    mode="live";
+    if(user){
+      try{ const w = await user.can("data.write"); if(w===false) canWrite=false; }catch(e){}
+      try{ canAdmin = !!(await user.canEdit()); }catch(e){ canAdmin=false; }
+    } else canAdmin=false;
+    const cat = db.doc("admin/catalog");
+    cat.onSnapshot(s=>{ state.settings = s.exists ? {...DEMO_SETTINGS, ...s.data()} : {...DEMO_SETTINGS, _empty:true}; emit("settings"); }, err);
+    cat.collection("items").orderBy("sort").onSnapshot(q=>{ state.items=q.docs.map(d=>({id:d.id,...d.data()})); emit("items"); }, err);
+    db.collection("orders").orderBy("createdAt","desc").limit(200).onSnapshot(q=>{ state.orders=q.docs.map(d=>({id:d.id,...d.data()})); emit("orders"); }, err);
+    onMode();
+  }
+  function err(e){ console.warn(e); toast(e && e.code==="invalid_argument" ? "You don't have permission to change this." : "Connection hiccup. Retrying…"); }
+  let onMode=()=>{};
+
+  const api = {
+    get mode(){return mode}, get canWrite(){return canWrite}, get canAdmin(){return canAdmin}, state,
+    on(k,fn){ subs[k].add(fn); return ()=>subs[k].delete(fn); },
+    onModeChange(fn){ onMode=fn; },
+    boot,
+    async addOrder(o){
+      if(mode==="demo"){ const id="d"+Date.now(); state.orders=[{id,...o},...state.orders]; emit("orders"); return id; }
+      const ref = await db.collection("orders").add(o); return ref.id;
+    },
+    async updateOrder(id,patch){
+      if(mode==="demo"){ state.orders=state.orders.map(o=>o.id===id?{...o,...patch}:o); emit("orders"); return; }
+      try{ await db.doc("orders/"+id).update(patch); }catch(e){ err(e); }
+    },
+    async saveItem(item){
+      const {id,...data}=item;
+      if(mode==="demo"){ const i=state.items.findIndex(x=>x.id===id); if(i>=0) state.items[i]={...item}; else state.items.push({...item}); state.items.sort((a,b)=>a.sort-b.sort); emit("items"); return; }
+      try{ await db.doc("admin/catalog/items/"+id).set(data); }catch(e){ err(e); }
+    },
+    async deleteItem(id){
+      if(mode==="demo"){ state.items=state.items.filter(x=>x.id!==id); emit("items"); return; }
+      try{ await db.doc("admin/catalog/items/"+id).delete(); }catch(e){ err(e); }
+    },
+    async saveSettings(patch){
+      const next={...state.settings,...patch}; delete next._empty;
+      if(mode==="demo"){ state.settings=next; emit("settings"); return; }
+      try{ await db.doc("admin/catalog").set(next); }catch(e){ err(e); }
+    }
+  };
+  return api;
+})();
+
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                           */
+/* ------------------------------------------------------------------ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mins = t => Math.max(0,Math.floor((Date.now()-t)/60000));
+const ago = t => { const m=mins(t); return m<1?"just now":m<60?m+" min":Math.floor(m/60)+" h "+(m%60)+" m"; };
+const clock = t => new Date(t).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+const isToday = t => new Date(t).toDateString()===new Date().toDateString();
+const st = k => STATUS.find(s=>s.k===k)||STATUS[0];
+let toastT;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2600); }
+const ls = { get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}, set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}} };
+
+/* ------------------------------------------------------------------ */
+/*  Router                                                            */
+/* ------------------------------------------------------------------ */
+let view = (location.hash||"").replace("#","") || "guest";
+if(!["guest","staff","admin"].includes(view)) view="guest";
+document.querySelectorAll(".views button").forEach(b=>b.onclick=()=>go(b.dataset.view));
+function go(v){ view=v; try{history.replaceState(null,"","#"+v)}catch(e){} render(); window.scrollTo(0,0); }
+function render(){
+  document.querySelectorAll(".views button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.view===view));
+  $("#overlay").innerHTML="";
+  $("#bagbar").hidden = view!=="guest";
+  ({guest:renderGuest, staff:renderStaff, admin:renderAdmin})[view]();
+}
+Store.onModeChange(()=>{
+  const b=$("#banner");
+  if(Store.mode==="demo"){ b.hidden=false; b.textContent="Preview mode: sample menu and orders, kept on this screen only. Open the shared link signed in to Claude to use live orders."; }
+  else if(!Store.canWrite){ b.hidden=false; b.textContent="You have view-only access. Ask the owner for Contributor access to place or manage orders."; }
+  else b.hidden=true;
+  render();
+});
+let ordersEmits=0; Store.on("orders",()=>ordersEmits++);
+["items","settings","orders"].forEach(k=>Store.on(k,()=>{ if(!sheetOpen) render(); else if(k==="orders") updateTracker(); }));
+
+/* ------------------------------------------------------------------ */
+/*  GUEST                                                             */
+/* ------------------------------------------------------------------ */
+let bag = [];             // {itemId,name,qty,choice}
+let pickChoice = {};      // itemId -> choice
+let activeCat = null;
+let sheetOpen = false;
+let myOrderId = ls.get("celeste.myOrder", null);
+let guestName = ls.get("celeste.guestName","");
+
+function renderGuest(){
+  const S=Store.state.settings, items=Store.state.items;
+  const app=$("#app");
+  if(!S){ app.innerHTML=`<div class="guest"><p class="muted">Setting the table…</p></div>`; renderBag(); return; }
+  const cats=(S.categories||CATS_DEFAULT).filter(c=>items.some(i=>i.category===c));
+  const mine = myOrderId && Store.state.orders.find(o=>o.id===myOrderId && o.status!=="done");
+  app.innerHTML = `
+  <div class="guest">
+    <section class="hello">
+      <div class="label">Celeste HQ · Guest lounge</div>
+      <h1>Welcome. <i>What can we bring you?</i></h1>
+      <p>${esc(S.welcome)}</p>
+    </section>
+    ${mine?`<button class="btn" style="width:100%;margin-top:14px;text-align:left" id="seeMine"><span class="label">Your order No. ${mine.no}</span><br>${esc(st(mine.status).label)} · tap to follow</button>`:""}
+    ${!items.length?`<div class="empty" style="padding:48px 0">The menu is being prepared. Staff can add items from the Admin portal.</div>`:""}
+    <nav class="cats" aria-label="Categories">${cats.map(c=>`<button data-cat="${esc(c)}" aria-pressed="${c===activeCat}">${esc(c)}</button>`).join("")}</nav>
+    ${cats.map(c=>`<section class="section" id="cat-${esc(c).replace(/\W/g,'')}">
+      <h2>${esc(c)}</h2>
+      <div class="menu-list">${items.filter(i=>i.category===c).map(itemRow).join("")}</div>
+    </section>`).join("")}
+  </div>`;
+  app.querySelectorAll(".cats button").forEach(b=>b.onclick=()=>{ activeCat=b.dataset.cat;
+    document.getElementById("cat-"+b.dataset.cat.replace(/\W/g,''))?.scrollIntoView({behavior:"smooth",block:"start"});
+    app.querySelectorAll(".cats button").forEach(x=>x.setAttribute("aria-pressed",x===b)); });
+  app.querySelectorAll("[data-choice]").forEach(b=>b.onclick=()=>{ pickChoice[b.dataset.id]=b.dataset.choice; renderGuest(); });
+  app.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>changeQty(b.dataset.add,+1));
+  app.querySelectorAll("[data-dec]").forEach(b=>b.onclick=()=>changeQty(b.dataset.dec,-1));
+  $("#seeMine")?.addEventListener("click",()=>openTracker(myOrderId));
+  renderBag();
+}
+function itemRow(i){
+  const choices=i.choices||[];
+  const ch = pickChoice[i.id] ?? (choices.length? choices[choices.length-1] : "");
+  const inBag = bag.filter(b=>b.itemId===i.id).reduce((a,b)=>a+b.qty,0);
+  return `<div class="item ${i.available?'':'off'}">
+    <div><h3>${esc(i.name)}</h3><p>${esc(i.desc||"")}${i.available?"":" · Not available right now"}</p></div>
+    <div>${inBag?`<div class="stepper"><button data-dec="${i.id}" aria-label="Remove one">−</button><span class="num">${inBag}</span><button data-add="${i.id}" aria-label="Add one">+</button></div>`
+             :`<button class="add" data-add="${i.id}">Add</button>`}</div>
+    ${choices.length && i.available?`<div class="chips">${choices.map(c=>`<button class="chip" data-id="${i.id}" data-choice="${esc(c)}" aria-pressed="${c===ch}">${esc(c)}</button>`).join("")}</div>`:""}
+  </div>`;
+}
+function changeQty(id,d){
+  const i=Store.state.items.find(x=>x.id===id); if(!i) return;
+  const choices=i.choices||[]; const ch = pickChoice[id] ?? (choices.length?choices[choices.length-1]:"");
+  let line = bag.find(b=>b.itemId===id && b.choice===ch) || (d<0 && bag.filter(b=>b.itemId===id).pop());
+  if(d>0){ if(line) line.qty++; else bag.push({itemId:id,name:i.name,qty:1,choice:ch}); }
+  else if(line){ line.qty--; if(line.qty<=0) bag=bag.filter(b=>b!==line); }
+  renderGuest();
+}
+function renderBag(){
+  const bb=$("#bagbar"); const n=bag.reduce((a,b)=>a+b.qty,0);
+  if(view!=="guest"||!n){ bb.hidden=true; bb.innerHTML=""; return; }
+  bb.hidden=false;
+  bb.innerHTML=`<button id="openBag"><span>Review order · <span class="num">${n}</span> ${n===1?"item":"items"}</span><span class="serif" style="font-style:italic;font-size:18px">Complimentary</span></button>`;
+  $("#openBag").onclick=openBag;
+}
+function openBag(){
+  const S=Store.state.settings; sheetOpen=true;
+  const room = ls.get("celeste.room", S.rooms[0]||"");
+  $("#overlay").innerHTML=`<div class="sheet-bg" id="bg"><form class="sheet" id="bagForm" aria-label="Your order">
+    <div class="row" style="display:flex;justify-content:space-between;align-items:center"><h2>Your order</h2><button type="button" class="btn ghost" id="closeBag">Close</button></div>
+    <div>${bag.map((b,ix)=>`<div class="line"><div><b class="num">${b.qty}×</b> ${esc(b.name)}${b.choice?`<small>${esc(b.choice)}</small>`:""}</div><button type="button" class="btn ghost small" data-rm="${ix}">Remove</button></div>`).join("")}</div>
+    <div class="grid2">
+      <div class="field"><label for="g-name">Your name</label><input class="input" id="g-name" required placeholder="So we know who it's for" value="${esc(guestName)}"></div>
+      <div class="field"><label for="g-room">Where are you?</label><select class="input" id="g-room">${(S.rooms||[]).map(r=>`<option ${r===room?"selected":""}>${esc(r)}</option>`).join("")}</select></div>
+    </div>
+    <div class="field"><label for="g-note">Anything else? <span class="muted" style="font-weight:400">(optional)</span></label><textarea class="input" id="g-note" placeholder="e.g. Oat milk if you have it, or bring it after the meeting starts"></textarea></div>
+    <button class="btn primary" style="padding:15px" id="place" ${Store.canWrite?"":"disabled"}>Place order</button>
+    <p class="muted" style="margin:0;font-size:13px;text-align:center">Our team will bring it to you, usually within 10 minutes.</p>
+  </form></div>`;
+  const close=()=>{sheetOpen=false;$("#overlay").innerHTML="";renderGuest();};
+  $("#closeBag").onclick=close;
+  $("#bg").onclick=e=>{ if(e.target.id==="bg") close(); };
+  $("#overlay").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{ bag.splice(+b.dataset.rm,1); if(!bag.length) close(); else openBag(); });
+  $("#bagForm").onsubmit=async e=>{
+    e.preventDefault();
+    const name=$("#g-name").value.trim(); if(!name){ $("#g-name").focus(); return; }
+    guestName=name; ls.set("celeste.guestName",name); ls.set("celeste.room",$("#g-room").value);
+    $("#place").disabled=true; $("#place").textContent="Sending…";
+    const now=Date.now();
+    const order={no:100+Math.floor(Math.random()*900),guest:name,room:$("#g-room").value,note:$("#g-note").value.trim(),
+      items:bag.map(b=>({name:b.name,qty:b.qty,choice:b.choice||""})),status:"new",staff:"",createdAt:now,updatedAt:now};
+    try{ const id=await Store.addOrder(order); myOrderId=id; ls.set("celeste.myOrder",id); bag=[]; pickChoice={}; openTracker(id); }
+    catch(err){ $("#place").disabled=false; $("#place").textContent="Place order"; toast("We couldn't send that. Check your connection and try again."); }
+  };
+}
+function openTracker(id){
+  sheetOpen=true; $("#bagbar").hidden=true;
+  $("#overlay").innerHTML=`<div class="sheet-bg" id="bg"><div class="sheet" id="tracker"></div></div>`;
+  $("#bg").onclick=e=>{ if(e.target.id==="bg"){ sheetOpen=false; $("#overlay").innerHTML=""; renderGuest(); } };
+  updateTracker();
+}
+function updateTracker(){
+  const t=$("#tracker"); if(!t) return;
+  const o=Store.state.orders.find(x=>x.id===myOrderId);
+  if(!o){ t.innerHTML=`<div class="track"><p class="muted">Sending your order…</p></div>`; return; }
+  const idx=STATUS.findIndex(s=>s.k===o.status);
+  const msg={new:"We've got it. Someone will pick it up in a moment.",prep:`${esc(o.staff||"Our team")} is preparing your order.`,
+    onway:`${esc(o.staff||"Our team")} is bringing it to ${esc(o.room)}.`,done:o.cancelled?esc(o.note||"Sorry, we couldn't make this one."):"Enjoy. Order again any time."}[o.status];
+  t.innerHTML=`<div class="track">
+    <div class="label">Order number</div><div class="no num">${o.no}</div>
+    <h2 style="font-size:24px">${o.cancelled?"Not available":esc(st(o.status).label)}</h2>
+    <p class="muted" style="margin:0;max-width:34ch">${msg}</p>
+    <div class="steps">${STATUS.map((s,i)=>`<div class="${i<=idx?'on':''}">${s.label}</div>`).join("")}</div>
+    <div style="width:100%;text-align:left;margin-top:10px">${o.items.map(i=>`<div class="line"><span><b class="num">${i.qty}×</b> ${esc(i.name)}${i.choice?` <span class="muted">· ${esc(i.choice)}</span>`:""}</span></div>`).join("")}</div>
+    <button class="btn" id="more" style="width:100%">Back to the menu</button>
+  </div>`;
+  $("#more").onclick=()=>{ sheetOpen=false; $("#overlay").innerHTML=""; renderGuest(); };
+}
+
+/* ------------------------------------------------------------------ */
+/*  STAFF                                                             */
+/* ------------------------------------------------------------------ */
+let me = ls.get("celeste.staffMe","");
+let seen = new Set(Store.state.orders.map(o=>o.id));
+let soundOn=false, actx=null, firstStaffRender=true;
+function chime(){ if(!soundOn||!actx) return; const o=actx.createOscillator(), g=actx.createGain();
+  o.type="sine"; o.frequency.setValueAtTime(880,actx.currentTime); o.frequency.setValueAtTime(1320,actx.currentTime+.12);
+  g.gain.setValueAtTime(.0001,actx.currentTime); g.gain.exponentialRampToValueAtTime(.2,actx.currentTime+.02); g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+.5);
+  o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime+.55); }
+
+function renderStaff(){
+  const S=Store.state.settings||DEMO_SETTINGS, orders=Store.state.orders;
+  const today=orders.filter(o=>isToday(o.createdAt));
+  const fresh=new Set();
+  orders.forEach(o=>{ if(!seen.has(o.id)){ if(ordersEmits>1 && !firstStaffRender && o.status==="new") fresh.add(o.id); seen.add(o.id);} });
+  if(fresh.size) chime();
+  firstStaffRender=false;
+  const delivered=today.filter(o=>o.status==="done"&&o.deliveredAt);
+  const avg = delivered.length? Math.round(delivered.reduce((a,o)=>a+(o.deliveredAt-o.createdAt),0)/delivered.length/60000) : null;
+  const open=STATUS.slice(0,3);
+  $("#app").innerHTML=`<div class="wrap">
+    <div class="staff-head">
+      <div><div class="label">Pantry · ${new Date().toLocaleDateString([], {weekday:"long",day:"numeric",month:"short"})}</div><h1>Guest orders</h1></div>
+      <div class="tally">
+        <div><span class="label">Waiting</span><b class="num">${orders.filter(o=>o.status==="new").length}</b></div>
+        <div><span class="label">Served today</span><b class="num">${delivered.length}</b></div>
+        <div><span class="label">Avg. time</span><b class="num">${avg==null?"–":avg+" min"}</b></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
+        <div class="field"><label for="me">I am</label><select class="input" id="me" style="padding:8px 10px"><option value="">Choose…</option>${(S.staff||[]).map(s=>`<option ${s===me?"selected":""}>${esc(s)}</option>`).join("")}</select></div>
+        <button class="btn" id="snd" aria-pressed="${soundOn}">${soundOn?"Sound on":"Turn on sound"}</button>
+      </div>
+    </div>
+    <div class="board">${open.map(s=>{
+      const list=orders.filter(o=>o.status===s.k).sort((a,b)=>a.createdAt-b.createdAt);
+      return `<section class="col"><header><h2><i class="dot" style="background:var(${s.c})"></i>${s.label}</h2><span class="label num">${list.length}</span></header>
+        ${list.length?list.map(o=>ticket(o,s,fresh.has(o.id))).join(""):`<div class="empty">${s.k==="new"?"No new orders. New ones appear here instantly.":"Nothing here right now."}</div>`}
+      </section>`; }).join("")}
+    </div>
+    <h2 class="label" style="margin:28px 0 10px">Delivered today</h2>
+    <div class="tablewrap"><table><thead><tr><th>No.</th><th>Guest</th><th>Where</th><th>Items</th><th>By</th><th>Ordered</th><th>Took</th></tr></thead><tbody>
+      ${delivered.length?delivered.map(o=>`<tr><td class="num">${o.no}</td><td>${esc(o.guest)}</td><td>${esc(o.room)}</td><td>${o.items.map(i=>i.qty+"× "+esc(i.name)).join(", ")}</td><td>${esc(o.staff||"–")}</td><td class="num">${clock(o.createdAt)}</td><td class="num">${Math.round((o.deliveredAt-o.createdAt)/60000)} min</td></tr>`).join("")
+        :`<tr><td colspan="7" class="muted">Delivered orders will be listed here.</td></tr>`}
+    </tbody></table></div>
+  </div>`;
+  $("#me").onchange=e=>{ me=e.target.value; ls.set("celeste.staffMe",me); };
+  $("#snd").onclick=()=>{ soundOn=!soundOn; if(soundOn){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); }catch(e){} } renderStaff(); if(soundOn) { const was=soundOn; chime(); } };
+  document.querySelectorAll("[data-next]").forEach(b=>b.onclick=()=>advance(b.dataset.next));
+  document.querySelectorAll("[data-cancel]").forEach(b=>b.onclick=()=>confirmCancel(b.dataset.cancel));
+}
+function ticket(o,s,isFresh){
+  const m=mins(o.createdAt); const late = s.k!=="onway" && m>=10;
+  const nextLabel={new:me?`I'll take it`:"Start preparing",prep:"Out for delivery",onway:"Mark delivered"}[s.k];
+  return `<article class="ticket ${isFresh?'fresh':''}" style="--c:var(${s.c})">
+    <div class="row"><span class="no num">No. ${o.no}</span><span class="age num ${late?'late':''}">${ago(o.createdAt)}</span></div>
+    <div><div class="where">${esc(o.room)}</div><div class="who">${esc(o.guest)}${o.staff?` · with ${esc(o.staff)}`:""}</div></div>
+    <ul>${o.items.map(i=>`<li><b class="num">${i.qty}×</b>${esc(i.name)}${i.choice?` <small>· ${esc(i.choice)}</small>`:""}</li>`).join("")}</ul>
+    ${o.note?`<div class="note">${esc(o.note)}</div>`:""}
+    <div class="acts">
+      <button class="btn primary small" data-next="${o.id}" ${Store.canWrite?"":"disabled"}>${nextLabel}</button>
+      ${s.k==="new"?`<button class="btn ghost small" data-cancel="${o.id}" ${Store.canWrite?"":"disabled"}>Can't fulfil</button>`:""}
+    </div>
+  </article>`;
+}
+function advance(id){
+  const o=Store.state.orders.find(x=>x.id===id); if(!o) return;
+  const nxt={new:"prep",prep:"onway",onway:"done"}[o.status]; const now=Date.now();
+  const patch={status:nxt,updatedAt:now};
+  if(o.status==="new") patch.staff = me || o.staff || "";
+  if(nxt==="done") patch.deliveredAt=now;
+  Store.updateOrder(id,patch);
+  toast(nxt==="done"?`No. ${o.no} delivered`:`No. ${o.no} · ${st(nxt).label}`);
+}
+function confirmCancel(id){
+  const o=Store.state.orders.find(x=>x.id===id);
+  $("#overlay").innerHTML=`<div class="sheet-bg" id="bg"><form class="sheet modal" id="cf">
+    <h2>Can't fulfil No. ${o.no}?</h2><p class="muted" style="margin:0">The guest will see a short note on their order screen.</p>
+    <div class="field"><label for="why">Note to the guest</label><input class="input" id="why" value="Sorry, we're out of this right now. Could you choose something else?"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" id="keep">Keep order</button><button class="btn primary">Close order</button></div>
+  </form></div>`;
+  $("#keep").onclick=()=>$("#overlay").innerHTML="";
+  $("#cf").onsubmit=e=>{ e.preventDefault(); Store.updateOrder(id,{status:"done",cancelled:true,note:$("#why").value,staff:me||"",deliveredAt:Date.now(),updatedAt:Date.now()}); $("#overlay").innerHTML=""; toast(`No. ${o.no} closed`); };
+}
+setInterval(()=>{ if(view==="staff" && !$("#overlay").innerHTML) renderStaff(); },30000);
+
+/* ------------------------------------------------------------------ */
+/*  ADMIN                                                             */
+/* ------------------------------------------------------------------ */
+let adminTab="menu";
+function renderAdmin(){
+  const tabs=[["menu","Menu"],["places","Rooms & staff"],["today","Today"],["orders","Order log"]];
+  $("#app").innerHTML=`<div class="wrap admin">
+    <nav class="side" aria-label="Admin sections">${tabs.map(t=>`<button data-tab="${t[0]}" aria-pressed="${t[0]===adminTab}">${t[1]}</button>`).join("")}</nav>
+    <div class="panel" id="panel"></div></div>`;
+  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{adminTab=b.dataset.tab;renderAdmin();});
+  const lock = !Store.canAdmin;
+  const P=$("#panel");
+  if(lock && Store.mode==="live") P.insertAdjacentHTML("beforeend",`<div class="banner" style="margin:0">Only Editors of this page can change the menu, rooms and staff. You can still see everything here.</div>`);
+  ({menu:adminMenu,places:adminPlaces,today:adminToday,orders:adminOrders})[adminTab](P,lock);
+}
+function adminMenu(P,lock){
+  const S=Store.state.settings||DEMO_SETTINGS, items=Store.state.items;
+  const cats=S.categories||CATS_DEFAULT;
+  P.insertAdjacentHTML("beforeend",`
+    <div class="panel-head"><div><div class="label">Admin</div><h1>Menu</h1></div>
+      <button class="btn primary" id="newItem" ${lock?"disabled":""}>Add item</button></div>
+    <p class="muted" style="margin:0">Switch an item off when it runs out. Guests see it greyed out until you switch it back on.</p>
+    <div class="tablewrap"><table><thead><tr><th>Item</th><th>Category</th><th>Options</th><th>Available</th><th></th></tr></thead><tbody>
+    ${items.length?cats.flatMap(c=>items.filter(i=>i.category===c)).concat(items.filter(i=>!cats.includes(i.category))).map(i=>`<tr>
+      <td><b>${esc(i.name)}</b><div class="muted" style="font-size:13px">${esc(i.desc||"")}</div></td>
+      <td><span class="cat-pill">${esc(i.category)}</span></td>
+      <td class="muted" style="font-size:13px">${(i.choices||[]).map(esc).join(" · ")||"–"}</td>
+      <td><button class="switch" role="switch" aria-label="Available" aria-checked="${!!i.available}" data-tog="${i.id}" ${lock?"disabled":""}></button></td>
+      <td style="text-align:right;white-space:nowrap"><button class="btn small" data-edit="${i.id}" ${lock?"disabled":""}>Edit</button></td>
+    </tr>`).join(""):`<tr><td colspan="5" class="muted">No items yet. Add your first item, for example Ceylon black tea.</td></tr>`}
+    </tbody></table></div>`);
+  $("#newItem").onclick=()=>itemForm(null);
+  P.querySelectorAll("[data-tog]").forEach(b=>b.onclick=()=>{ const i=items.find(x=>x.id===b.dataset.tog); Store.saveItem({...i,available:!i.available}); toast(`${i.name} ${!i.available?"is back on the menu":"marked unavailable"}`); });
+  P.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>itemForm(items.find(x=>x.id===b.dataset.edit)));
+}
+function itemForm(item){
+  const S=Store.state.settings||DEMO_SETTINGS; const cats=S.categories||CATS_DEFAULT;
+  const i=item||{id:"i"+Date.now().toString(36),name:"",category:cats[0],desc:"",choices:[],available:true,sort:(Store.state.items.reduce((a,b)=>Math.max(a,b.sort||0),0)+1)};
+  $("#overlay").innerHTML=`<div class="sheet-bg" id="bg"><form class="sheet modal" id="itf">
+    <h2>${item?"Edit item":"New item"}</h2>
+    <div class="field"><label for="f-name">Name</label><input class="input" id="f-name" required value="${esc(i.name)}"></div>
+    <div class="grid2">
+      <div class="field"><label for="f-cat">Category</label><select class="input" id="f-cat">${cats.map(c=>`<option ${c===i.category?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+      <div class="field"><label for="f-av">Availability</label><select class="input" id="f-av"><option value="1" ${i.available?"selected":""}>Available</option><option value="0" ${i.available?"":"selected"}>Not available</option></select></div>
+    </div>
+    <div class="field"><label for="f-desc">Short description</label><input class="input" id="f-desc" value="${esc(i.desc||"")}" placeholder="One line guests will read"></div>
+    <div class="field"><label for="f-ch">Guest options <span class="muted" style="font-weight:400">(comma separated, last one is the default)</span></label><input class="input" id="f-ch" value="${esc((i.choices||[]).join(", "))}" placeholder="No sugar, Less sugar, Regular"></div>
+    <div style="display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap">
+      ${item?`<button type="button" class="btn ghost" id="del" style="color:var(--danger)">Delete item</button>`:"<span></span>"}
+      <div style="display:flex;gap:8px"><button type="button" class="btn" id="cx">Cancel</button><button class="btn primary">Save</button></div>
+    </div>
+  </form></div>`;
+  $("#cx").onclick=()=>$("#overlay").innerHTML="";
+  let armed=false;
+  $("#del")?.addEventListener("click",e=>{ if(!armed){ armed=true; e.target.textContent="Tap again to delete"; return; }
+    Store.deleteItem(i.id); $("#overlay").innerHTML=""; toast(`${i.name} deleted`); });
+  $("#itf").onsubmit=e=>{ e.preventDefault();
+    const next={...i,name:$("#f-name").value.trim(),category:$("#f-cat").value,desc:$("#f-desc").value.trim(),
+      choices:$("#f-ch").value.split(",").map(s=>s.trim()).filter(Boolean),available:$("#f-av").value==="1"};
+    Store.saveItem(next); $("#overlay").innerHTML=""; toast(item?"Saved":`${next.name} added to the menu`); };
+}
+function adminPlaces(P,lock){
+  const S=Store.state.settings||DEMO_SETTINGS;
+  const list=(key,title,hint,ph)=>`<div class="card"><h2>${title}</h2><p class="muted" style="margin:0;font-size:13px">${hint}</p>
+    <div class="taglist">${(S[key]||[]).map((v,ix)=>`<span class="tag">${esc(v)}<button aria-label="Remove ${esc(v)}" data-rmk="${key}" data-ix="${ix}" ${lock?"disabled":""}>×</button></span>`).join("")}</div>
+    <form class="addrow" data-addk="${key}"><input class="input" id="add-${key}" placeholder="${ph}" ${lock?"disabled":""}><button class="btn" ${lock?"disabled":""}>Add</button></form></div>`;
+  P.insertAdjacentHTML("beforeend",`
+    <div class="panel-head"><div><div class="label">Admin</div><h1>Rooms &amp; staff</h1></div></div>
+    <div class="cards">
+      ${list("rooms","Rooms","Where guests can ask for their order to be brought.","e.g. Meeting room 3")}
+      ${list("staff","Staff","People who prepare and deliver orders. They pick their name on the Staff board.","e.g. Vihara")}
+      ${list("categories","Menu sections","The order sections appear in on the guest menu.","e.g. Desserts")}
+      <form class="card" id="wf"><h2>Welcome message</h2><p class="muted" style="margin:0;font-size:13px">Shown at the top of the guest menu.</p>
+        <textarea class="input" id="welcome" ${lock?"disabled":""}>${esc(S.welcome||"")}</textarea>
+        <button class="btn primary" ${lock?"disabled":""}>Save message</button></form>
+    </div>`);
+  P.querySelectorAll("[data-rmk]").forEach(b=>b.onclick=()=>{ const k=b.dataset.rmk; const arr=[...(S[k]||[])]; arr.splice(+b.dataset.ix,1); Store.saveSettings({[k]:arr}); });
+  P.querySelectorAll("[data-addk]").forEach(f=>f.onsubmit=e=>{ e.preventDefault(); const k=f.dataset.addk; const v=$("#add-"+k).value.trim(); if(!v) return; Store.saveSettings({[k]:[...(S[k]||[]),v]}); });
+  $("#wf").onsubmit=e=>{ e.preventDefault(); Store.saveSettings({welcome:$("#welcome").value.trim()}); toast("Welcome message saved"); };
+}
+function adminToday(P){
+  const orders=Store.state.orders.filter(o=>isToday(o.createdAt));
+  const served=orders.filter(o=>o.status==="done"&&!o.cancelled);
+  const cups=orders.filter(o=>!o.cancelled).reduce((a,o)=>a+o.items.reduce((x,i)=>x+i.qty,0),0);
+  const avg=served.length?Math.round(served.reduce((a,o)=>a+((o.deliveredAt||o.createdAt)-o.createdAt),0)/served.length/60000):null;
+  const tally={}; orders.filter(o=>!o.cancelled).forEach(o=>o.items.forEach(i=>tally[i.name]=(tally[i.name]||0)+i.qty));
+  const top=Object.entries(tally).sort((a,b)=>b[1]-a[1]).slice(0,6); const max=top[0]?.[1]||1;
+  const byStaff={}; served.forEach(o=>{ const k=o.staff||"Unassigned"; byStaff[k]=(byStaff[k]||0)+1; });
+  const byRoom={}; orders.forEach(o=>byRoom[o.room]=(byRoom[o.room]||0)+1);
+  P.insertAdjacentHTML("beforeend",`
+    <div class="panel-head"><div><div class="label">Admin · ${new Date().toLocaleDateString([], {weekday:"long",day:"numeric",month:"long"})}</div><h1>Today</h1></div></div>
+    <div class="stats">
+      <div class="stat"><span class="label">Orders</span><b class="num">${orders.length}</b></div>
+      <div class="stat"><span class="label">Items served</span><b class="num">${cups}</b></div>
+      <div class="stat"><span class="label">Avg. delivery</span><b class="num">${avg==null?"–":avg+"<span style='font-size:18px'> min</span>"}</b></div>
+      <div class="stat"><span class="label">Still open</span><b class="num">${orders.filter(o=>o.status!=="done").length}</b></div>
+    </div>
+    <div class="cards">
+      <div class="card"><h2>Most asked for</h2><div class="bars">${top.length?top.map(([n,v])=>`<div class="bar"><span>${esc(n)}</span><span class="track2"><i style="width:${v/max*100}%"></i></span><span class="num">${v}</span></div>`).join(""):`<span class="muted">No orders yet today.</span>`}</div></div>
+      <div class="card"><h2>Delivered by</h2>${Object.keys(byStaff).length?Object.entries(byStaff).map(([k,v])=>`<div class="line"><span>${esc(k)}</span><b class="num">${v}</b></div>`).join(""):`<span class="muted">Nothing delivered yet.</span>`}</div>
+      <div class="card"><h2>By room</h2>${Object.keys(byRoom).length?Object.entries(byRoom).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="line"><span>${esc(k)}</span><b class="num">${v}</b></div>`).join(""):`<span class="muted">No orders yet today.</span>`}</div>
+    </div>`);
+}
+function adminOrders(P,lock){
+  const orders=Store.state.orders.slice(0,100);
+  P.insertAdjacentHTML("beforeend",`
+    <div class="panel-head"><div><div class="label">Admin</div><h1>Order log</h1></div><span class="muted">Latest ${orders.length}</span></div>
+    <div class="tablewrap"><table><thead><tr><th>No.</th><th>When</th><th>Guest</th><th>Where</th><th>Items</th><th>Status</th><th>Staff</th></tr></thead><tbody>
+    ${orders.length?orders.map(o=>{const s=st(o.status);return `<tr><td class="num">${o.no}</td><td class="num">${new Date(o.createdAt).toLocaleDateString([], {day:"numeric",month:"short"})} ${clock(o.createdAt)}</td><td>${esc(o.guest)}</td><td>${esc(o.room)}</td>
+      <td>${o.items.map(i=>i.qty+"× "+esc(i.name)).join(", ")}</td><td><span class="status" style="--s1:var(${o.cancelled?"--danger":s.c});--s2:var(${o.cancelled?"--sunk":s.s})">${o.cancelled?"Not fulfilled":s.label}</span></td><td>${esc(o.staff||"–")}</td></tr>`}).join("")
+      :`<tr><td colspan="7" class="muted">Orders will be listed here as guests place them.</td></tr>`}
+    </tbody></table></div>`);
+}
+
+/* ------------------------------------------------------------------ */
+render();
+Store.boot();
+</script>
+
+</body></html>
