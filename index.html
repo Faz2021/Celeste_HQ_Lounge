@@ -343,7 +343,7 @@ function render(){
 }
 Store.onModeChange(()=>{
   const b=$("#banner");
-  if(Store.mode==="demo"){ b.hidden=false; b.textContent="Preview mode: sample menu and orders, kept on this screen only. Open the shared link signed in to Claude to use live orders."; }
+  if(Store.mode==="demo"){ b.hidden=false; b.textContent="Just Celeste it!"; }
   else if(!Store.canWrite){ b.hidden=false; b.textContent="You have view-only access. Ask the owner for Contributor access to place or manage orders."; }
   else b.hidden=true;
   render();
